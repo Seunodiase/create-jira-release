@@ -1,7 +1,5 @@
 # create-jira-release (GitHub Action)
 
-[![Release](https://github.com/GeoWerkstatt/create-jira-release/actions/workflows/release-new-action-version.yml/badge.svg)](https://github.com/GeoWerkstatt/create-jira-release/actions/workflows/release-new-action-version.yml)
-
 Creates a new Jira release for a specific Jira project and assigns all relevant* Jira issue numbers to it.  
 \* All Jira issue numbers (e.g. TEST-123) in commit messages since last Git tag.
 
@@ -40,9 +38,14 @@ steps:
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------- | -------- |
 | `secrets.JIRA_AUTOMATION_WEBHOOK` | Can be obtained or regenerated in the _Incoming webhook_ automation step of the corresponding Jira automation rule. | true     |
 
-## Publish new GitHub Action version
+## Workflow Integration
 
-A new GitHub _pre-release_ is created [automatically](./.github/workflows/create-new-pre-release.yml) if there are new changes on the `main` branch. Uncheck _This is a pre-release_ in the _Edit_-Section for a specific pre-release in order to [update](./.github/workflows/release-new-action-version.yml) a major tag (e.g. v1) to point to the latest release. A major tag from the latest released tag is created automatically if a corresponding major tag doesn't exist already.
+This action can be integrated into your GitHub workflows. An example workflow that creates a Jira release when a pull request from `dev` to `main` is opened or updated is available at [`.github/workflows/create-jira-release-on-pr.yml`](.github/workflows/create-jira-release-on-pr.yml).
+
+The example workflow:
+- Triggers on pull requests from `dev` to `main` branch
+- Automatically increments the minor version number
+- Creates a Jira release with all issues found in commits since the last tag
 
 ## License
 

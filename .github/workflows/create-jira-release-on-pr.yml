@@ -1,0 +1,58 @@
+name: Create JIRA release on PR
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-jira-release:
+    runs-on: ubuntu-latest
+    # Only run if PR is from dev branch to main branch
+    if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'dev'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch full history for tag comparison
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set build version number
+        run: |
+          # Read version from package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+
+          # Increment minor version using Node.js for reliable semver parsing
+          NEW_VERSION=$(node -e "
+            const version = require('./package.json').version;
+            const parts = version.split('.');
+            const major = parseInt(parts[0]) || 0;
+            const minor = parseInt(parts[1]) || 0;
+            const patch = parseInt(parts[2]) || 0;
+            const newMinor = minor + 1;
+            console.log('middleware-' + major + '.' + newMinor + '.' + patch);
+          ")
+
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "New version: $NEW_VERSION"
+
+      - name: Create JIRA release
+        uses: ./
+        with:
+          jira-project-key: ${{ secrets.JIRA_PROJECT_KEY }}
+          jira-automation-webhook: ${{ secrets.JIRA_AUTOMATION_WEBHOOK }}
+          build-version: ${{ env.VERSION }}
