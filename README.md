@@ -17,7 +17,7 @@ See [action.yml](action.yml)
 steps:
 - uses: actions/checkout@v4
 
-- uses: ${repo_path}
+- uses: Seunodiase/create-jira-release@v1
   with:
     jira-project-key: 'TEST'
     jira-automation-webhook: ${{ secrets.JIRA_AUTOMATION_WEBHOOK }}
