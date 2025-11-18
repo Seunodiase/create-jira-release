@@ -17,7 +17,7 @@ See [action.yml](action.yml)
 steps:
 - uses: actions/checkout@v4
 
-- uses: GeoWerkstatt/create-jira-release@v1
+- uses: ${repo_path}
   with:
     jira-project-key: 'TEST'
     jira-automation-webhook: ${{ secrets.JIRA_AUTOMATION_WEBHOOK }}
